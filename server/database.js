@@ -1,8 +1,14 @@
 const sqlite3 = require('sqlite3').verbose();
 const bcrypt = require('bcryptjs');
 const path = require('path');
+const fs = require('fs');
 
-const DB_PATH = path.join(__dirname, '../data/xiaolongxia.db');
+// 数据目录：优先使用环境变量，兼容 Render 持久化磁盘
+const DATA_DIR = process.env.DATA_DIR || path.join(__dirname, '../data');
+const DB_PATH = path.join(DATA_DIR, 'xiaolongxia.db');
+
+// 确保数据目录存在
+fs.mkdirSync(DATA_DIR, { recursive: true });
 
 class Database {
   constructor() {
