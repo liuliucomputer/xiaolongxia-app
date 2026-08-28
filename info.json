@@ -1,0 +1,22 @@
+{
+  "appName": "小龙虾 App",
+  "status": "部署完成",
+  "localAccess": "http://localhost:3000",
+  "package": "C:/Users/liuliucomputer/WorkBuddy/小龙虾/output/小龙虾App_部署包.tar.gz",
+  "features": [
+    "用户登录/注册（手机号/邮箱）",
+    "AI对话（对接 Agnes AI）",
+    "VIP会员系统",
+    "管理员后台",
+    "Agent社交功能"
+  ],
+  "defaultAdmin": {
+    "username": "admin",
+    "password": "liuliu"
+  },
+  "aiConfig": {
+    "apiKey": "sk-FwaH511AsiLrNbMvPC6lnzZzDjLBDHNKvuAuAKzS5puLY8HO",
+    "baseUrl": "https://apihub.agnes-ai.cn/v1",
+    "model": "agnes-2.5-flash"
+  }
+}
