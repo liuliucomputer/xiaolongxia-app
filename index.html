@@ -11,77 +11,79 @@
   <!-- 登录/注册页面 -->
   <div id="auth-page" class="page active">
     <div class="auth-container">
-      <div class="auth-header">
-        <h1>🦞 小龙虾</h1>
-        <p>你的 AI 智能助手</p>
-      </div>
-      
-      <div class="auth-tabs">
-        <button class="tab active" data-tab="login">登录</button>
-        <button class="tab" data-tab="register">注册</button>
-      </div>
-      
-      <!-- 登录表单 -->
-      <form id="login-form" class="auth-form active">
-        <div class="form-group">
-          <label>账号</label>
-          <input type="text" id="login-account" placeholder="手机号/邮箱/用户名" required>
-        </div>
-        <div class="form-group">
-          <label>密码</label>
-          <input type="password" id="login-password" placeholder="请输入密码" required>
-        </div>
-        <button type="submit" class="btn btn-primary">登录</button>
-        <p class="hint-text">管理员账号: admin / liuliu</p>
-      </form>
-      
-      <!-- 注册表单 -->
-      <form id="register-form" class="auth-form">
-        <div class="register-method-tabs">
-          <button type="button" class="method-tab active" data-method="phone">手机号注册</button>
-          <button type="button" class="method-tab" data-method="email">邮箱注册</button>
+      <div class="auth-box">
+        <div class="auth-header">
+          <h1>🦞 小龙虾</h1>
+          <p>你的 AI 智能助手</p>
         </div>
         
-        <!-- 手机号注册 -->
-        <div id="phone-register" class="register-method active">
+        <div class="auth-tabs">
+          <button class="tab active" data-tab="login">登录</button>
+          <button class="tab" data-tab="register">注册</button>
+        </div>
+        
+        <!-- 登录表单 -->
+        <form id="login-form" class="auth-form active">
           <div class="form-group">
-            <label>手机号</label>
-            <input type="tel" id="reg-phone" placeholder="请输入手机号" required>
+            <label>账号</label>
+            <input type="text" id="login-account" placeholder="手机号/邮箱/用户名" required>
           </div>
           <div class="form-group">
-            <label>验证码</label>
-            <div class="code-input-group">
-              <input type="text" id="reg-phone-code" placeholder="请输入验证码" required>
-              <button type="button" class="btn-code" id="send-phone-code">获取验证码</button>
+            <label>密码</label>
+            <input type="password" id="login-password" placeholder="请输入密码" required>
+          </div>
+          <button type="submit" class="btn btn-primary">登录</button>
+          <p class="hint-text">管理员账号: admin / liuliu</p>
+        </form>
+        
+        <!-- 注册表单 -->
+        <form id="register-form" class="auth-form">
+          <div class="register-method-tabs">
+            <button type="button" class="method-tab active" data-method="phone">手机号注册</button>
+            <button type="button" class="method-tab" data-method="email">邮箱注册</button>
+          </div>
+          
+          <!-- 手机号注册 -->
+          <div id="phone-register" class="register-method active">
+            <div class="form-group">
+              <label>手机号</label>
+              <input type="tel" id="reg-phone" placeholder="请输入手机号" required>
+            </div>
+            <div class="form-group">
+              <label>验证码</label>
+              <div class="code-input-group">
+                <input type="text" id="reg-phone-code" placeholder="请输入验证码" required>
+                <button type="button" class="btn-code" id="send-phone-code">获取验证码</button>
+              </div>
             </div>
           </div>
-        </div>
-        
-        <!-- 邮箱注册 -->
-        <div id="email-register" class="register-method">
-          <div class="form-group">
-            <label>邮箱</label>
-            <input type="email" id="reg-email" placeholder="请输入邮箱" required>
-          </div>
-          <div class="form-group">
-            <label>验证码</label>
-            <div class="code-input-group">
-              <input type="text" id="reg-email-code" placeholder="请输入验证码" required>
-              <button type="button" class="btn-code" id="send-email-code">获取验证码</button>
+          
+          <!-- 邮箱注册 -->
+          <div id="email-register" class="register-method">
+            <div class="form-group">
+              <label>邮箱</label>
+              <input type="email" id="reg-email" placeholder="请输入邮箱" required>
+            </div>
+            <div class="form-group">
+              <label>验证码</label>
+              <div class="code-input-group">
+                <input type="text" id="reg-email-code" placeholder="请输入验证码" required>
+                <button type="button" class="btn-code" id="send-email-code">获取验证码</button>
+              </div>
             </div>
           </div>
-        </div>
-        
-        <div class="form-group">
-          <label>用户名</label>
-          <input type="text" id="reg-username" placeholder="请输入用户名" required>
-        </div>
-        <div class="form-group">
-          <label>密码</label>
-          <input type="password" id="reg-password" placeholder="请设置密码（至少6位）" required>
-        </div>
-        <button type="submit" class="btn btn-primary">注册</button>
-      </form>
+          
+          <div class="form-group">
+            <label>用户名</label>
+            <input type="text" id="reg-username" placeholder="请输入用户名" required>
+          </div>
+          <div class="form-group">
+            <label>密码</label>
+            <input type="password" id="reg-password" placeholder="请设置密码（至少6位）" required>
+          </div>
+          <button type="submit" class="btn btn-primary">注册</button>
+        </form>
+      </div>
     </div>
   </div>
   
