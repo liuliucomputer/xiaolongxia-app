@@ -12,8 +12,9 @@ class Database {
   }
 
   async initTables() {
-    const client = await pool.connect();
     try {
+      const client = await pool.connect();
+      try {
       await client.query(`
         CREATE TABLE IF NOT EXISTS users (
           id SERIAL PRIMARY KEY,
@@ -91,8 +92,11 @@ class Database {
       `);
 
       console.log('数据库表初始化完成');
-    } finally {
-      client.release();
+      } finally {
+        client.release();
+      }
+    } catch (err) {
+      console.error('数据库初始化失败:', err.message);
     }
   }
 

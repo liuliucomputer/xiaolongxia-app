@@ -32,6 +32,14 @@ app.use((err, req, res, next) => {
   res.status(500).json({ error: '服务器内部错误' });
 });
 
-app.listen(PORT, () => {
-  console.log(`小龙虾 App 服务器运行在 http://localhost:${PORT}`);
+// 先初始化数据库再启动服务
+db.initTables().then(() => {
+  app.listen(PORT, () => {
+    console.log(`小龙虾 App 服务器运行在 http://localhost:${PORT}`);
+  });
+}).catch(err => {
+  console.error('数据库初始化失败，服务器启动:', err);
+  app.listen(PORT, () => {
+    console.log(`小龙虾 App 服务器运行在 http://localhost:${PORT} (数据库初始化失败)`);
+  });
 });
