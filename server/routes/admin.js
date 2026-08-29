@@ -1,7 +1,7 @@
 const express = require('express');
 const bcrypt = require('bcryptjs');
 const router = express.Router();
-const db = require('./database');
+const db = require('../database');
 const { authMiddleware, adminMiddleware } = require('./auth');
 
 // ==================== 用户管理 ====================

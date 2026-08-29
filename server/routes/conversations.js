@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const db = require('./database');
+const db = require('../database');
 const { authMiddleware } = require('./auth');
 
 // AI 配置（这里可以配置为环境变量）
