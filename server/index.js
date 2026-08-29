@@ -8,7 +8,7 @@ const PORT = process.env.PORT || 3000;
 
 // 中间件
 app.use(express.json());
-app.use(express.static(path.join(__dirname, '../public')));
+app.use(express.static(path.join(__dirname, '../')));
 
 // API 路由
 app.use('/api/auth', require('./routes/auth'));
