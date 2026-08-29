@@ -1,138 +1,128 @@
-const sqlite3 = require('sqlite3').verbose();
+const { Pool } = require('pg');
 const bcrypt = require('bcryptjs');
-const path = require('path');
 
-// 使用环境变量或默认路径
-const DB_PATH = process.env.DB_PATH || path.join(__dirname, '../../data/xiaolongxia.db');
+// 连接 PostgreSQL（通过环境变量）
+const pool = new Pool({
+  connectionString: process.env.DATABASE_URL,
+});
 
 class Database {
   constructor() {
-    this.db = new sqlite3.Database(DB_PATH);
     this.initTables();
   }
 
-  initTables() {
-    this.db.serialize(() => {
-      // 用户表
-      this.db.run(`
+  async initTables() {
+    const client = await pool.connect();
+    try {
+      await client.query(`
         CREATE TABLE IF NOT EXISTS users (
-          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          id SERIAL PRIMARY KEY,
           username TEXT UNIQUE NOT NULL,
           email TEXT UNIQUE,
           phone TEXT UNIQUE,
           password_hash TEXT NOT NULL,
           role TEXT DEFAULT 'user',
           is_vip INTEGER DEFAULT 0,
-          vip_expires_at INTEGER,
-          created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-          updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+          vip_expires_at BIGINT,
+          created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
+          updated_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
         )
       `);
 
       // 管理员账号（密码用 bcrypt 加密）
       const adminPassword = bcrypt.hashSync('liuliu', 10);
-      this.db.run(`INSERT OR IGNORE INTO users (username, password_hash, role) VALUES (?, ?, ?)`,
-        ['admin', adminPassword, 'admin']);
+      await client.query(
+        `INSERT INTO users (username, password_hash, role) VALUES ($1, $2, $3) ON CONFLICT (username) DO NOTHING`,
+        ['admin', adminPassword, 'admin']
+      );
 
-      // 对话表
-      this.db.run(`
+      await client.query(`
         CREATE TABLE IF NOT EXISTS conversations (
-          id INTEGER PRIMARY KEY AUTOINCREMENT,
-          user_id INTEGER NOT NULL,
+          id SERIAL PRIMARY KEY,
+          user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
           title TEXT,
-          created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-          updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-          FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+          created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
+          updated_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
         )
       `);
 
-      // 消息表
-      this.db.run(`
+      await client.query(`
         CREATE TABLE IF NOT EXISTS messages (
-          id INTEGER PRIMARY KEY AUTOINCREMENT,
-          conversation_id INTEGER NOT NULL,
+          id SERIAL PRIMARY KEY,
+          conversation_id INTEGER NOT NULL REFERENCES conversations(id) ON DELETE CASCADE,
           sender TEXT NOT NULL,
           content TEXT NOT NULL,
           role TEXT NOT NULL,
-          created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-          FOREIGN KEY (conversation_id) REFERENCES conversations(id) ON DELETE CASCADE
+          created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
         )
       `);
 
-      // Agent 表
-      this.db.run(`
+      await client.query(`
         CREATE TABLE IF NOT EXISTS agents (
-          id INTEGER PRIMARY KEY AUTOINCREMENT,
-          user_id INTEGER NOT NULL,
+          id SERIAL PRIMARY KEY,
+          user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
           name TEXT NOT NULL,
           personality TEXT DEFAULT '',
           avatar TEXT DEFAULT '',
           system_prompt TEXT DEFAULT '',
-          created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-          FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+          created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
         )
       `);
 
-      // Agent 好友关系表
-      this.db.run(`
+      await client.query(`
         CREATE TABLE IF NOT EXISTS agent_friends (
-          id INTEGER PRIMARY KEY AUTOINCREMENT,
-          agent_id_1 INTEGER NOT NULL,
-          agent_id_2 INTEGER NOT NULL,
-          created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-          FOREIGN KEY (agent_id_1) REFERENCES agents(id) ON DELETE CASCADE,
-          FOREIGN KEY (agent_id_2) REFERENCES agents(id) ON DELETE CASCADE,
+          id SERIAL PRIMARY KEY,
+          agent_id_1 INTEGER NOT NULL REFERENCES agents(id) ON DELETE CASCADE,
+          agent_id_2 INTEGER NOT NULL REFERENCES agents(id) ON DELETE CASCADE,
+          created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
           UNIQUE(agent_id_1, agent_id_2)
         )
       `);
 
-      // Agent 对话记录表
-      this.db.run(`
+      await client.query(`
         CREATE TABLE IF NOT EXISTS agent_conversations (
-          id INTEGER PRIMARY KEY AUTOINCREMENT,
-          agent_id_1 INTEGER NOT NULL,
-          agent_id_2 INTEGER NOT NULL,
+          id SERIAL PRIMARY KEY,
+          agent_id_1 INTEGER NOT NULL REFERENCES agents(id) ON DELETE CASCADE,
+          agent_id_2 INTEGER NOT NULL REFERENCES agents(id) ON DELETE CASCADE,
           message TEXT NOT NULL,
           reply TEXT NOT NULL,
-          created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-          FOREIGN KEY (agent_id_1) REFERENCES agents(id) ON DELETE CASCADE,
-          FOREIGN KEY (agent_id_2) REFERENCES agents(id) ON DELETE CASCADE
+          created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
         )
       `);
 
       console.log('数据库表初始化完成');
-    });
+    } finally {
+      client.release();
+    }
   }
 
   async query(sql, params = []) {
-    return new Promise((resolve, reject) => {
-      this.db.all(sql, params, (err, rows) => {
-        if (err) reject(err);
-        else resolve(rows);
-      });
-    });
+    const client = await pool.connect();
+    try {
+      return await client.query(sql, params);
+    } finally {
+      client.release();
+    }
   }
 
   async get(sql, params = []) {
-    return new Promise((resolve, reject) => {
-      this.db.get(sql, params, (err, row) => {
-        if (err) reject(err);
-        else resolve(row);
-      });
-    });
+    const client = await pool.connect();
+    try {
+      const result = await client.query(sql, params);
+      return result.rows[0];
+    } finally {
+      client.release();
+    }
   }
 
   async run(sql, params = []) {
-    return new Promise((resolve, reject) => {
-      this.db.run(sql, params, function(err) {
-        if (err) reject(err);
-        else resolve({ id: this.lastID, changes: this.changes });
-      });
-    });
-  }
-
-  close() {
-    this.db.close();
+    const client = await pool.connect();
+    try {
+      const result = await client.query(sql, params);
+      return { id: result.rows[0]?.id, changes: result.rowCount };
+    } finally {
+      client.release();
+    }
   }
 }
 

@@ -1,17 +1,17 @@
 services:
   - type: web
-    name: xiaolongxia-api
+    name: xiaolongxia-app
     env: node
     buildCommand: npm install
-    startCommand: node server/index.js
+    startCommand: npm start
     envVars:
-      - key: PORT
-        value: 3000
       - key: NODE_ENV
         value: production
-      - key: DATA_DIR
-        value: /opt/render/workspace/data
-    disk:
-      name: data
-      mountPath: /opt/render/workspace/data
-      sizeGB: 1
+      - key: PORT
+        value: 10000
+    autoDeploy: true
+
+databases:
+  - name: xiaolongxia-db
+    env: postgres
+    plan: free
