@@ -1,14 +1,13 @@
 const express = require('express');
 const path = require('path');
 const db = require('./database');
-require('dotenv').config();
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
 // 中间件
 app.use(express.json());
-app.use(express.static(path.join(__dirname, '../')));
+app.use(express.static(path.join(__dirname, '..')));
 
 // API 路由
 app.use('/api/auth', require('./routes/auth'));
@@ -24,7 +23,7 @@ app.get('/api/health', (req, res) => {
 
 // 所有其他请求返回 index.html（前端路由）
 app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, '../public/index.html'));
+  res.sendFile(path.join(__dirname, '..', 'index.html'));
 });
 
 // 错误处理
