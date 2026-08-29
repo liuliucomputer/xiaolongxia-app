@@ -2,7 +2,8 @@ const sqlite3 = require('sqlite3').verbose();
 const bcrypt = require('bcryptjs');
 const path = require('path');
 
-const DB_PATH = path.join(__dirname, '../data/xiaolongxia.db');
+// 使用环境变量或默认路径
+const DB_PATH = process.env.DB_PATH || path.join(__dirname, '../../data/xiaolongxia.db');
 
 class Database {
   constructor() {
