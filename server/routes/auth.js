@@ -2,7 +2,7 @@ const express = require('express');
 const bcrypt = require('bcryptjs');
 const router = express.Router();
 const db = require('../database');
-const { authMiddleware, adminMiddleware, generateToken } = require('./auth');
+const { authMiddleware, adminMiddleware, generateToken } = require('../auth');
 
 // 注册 - 手机号
 router.post('/register/phone', async (req, res) => {
